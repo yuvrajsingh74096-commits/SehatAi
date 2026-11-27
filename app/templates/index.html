@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SehatAI — Voice-First Healthcare Companion</title>
+  <style>
+    :root {
+      --bg: #eef5f2;
+      --surface: #ffffff;
+      --ink: #122620;
+      --muted: #4b635b;
+      --teal: #0f766e;
+      --teal-dark: #115e59;
+      --teal-soft: #e6f4f1;
+      --border: #d3e2dc;
+      --shadow: 0 10px 28px rgba(18, 38, 32, 0.06);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(15, 118, 110, 0.12), transparent 36%),
+        radial-gradient(circle at 88% 14%, rgba(217, 119, 6, 0.11), transparent 34%),
+        var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+    .wrap {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .hero {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      background: linear-gradient(125deg, #0f766e 0%, #134e4a 62%, #1e3a3a 100%);
+      color: #ffffff;
+      border-radius: 20px;
+      padding: 22px 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+    .hero-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .hero h1 {
+      margin: 0;
+      font-size: 1.65rem;
+      letter-spacing: -0.02em;
+    }
+    .hero p {
+      margin: 4px 0 0 0;
+      color: #d7f3ee;
+      font-size: 0.92rem;
+    }
+    .status-pill {
+      font-size: 0.84rem;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255, 251, 235, 0.95);
+      color: #92400e;
+      font-weight: 700;
+      border: 1px solid rgba(251, 191, 36, 0.5);
+    }
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 820px) {
+      .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+    }
+    .stat-num {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--teal-dark);
+    }
+    .stat-label {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 820px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+    .card h3 {
+      margin: 0 0 10px 0;
+      font-size: 1.08rem;
+    }
+    .mic-btn {
+      width: 100%;
+      padding: 15px 18px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(90deg, var(--teal) 0%, var(--teal-dark) 100%);
+      color: #fff;
+      cursor: pointer;
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .mic-btn:hover { filter: brightness(1.04); }
+    .controls-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    label {
+      display: block;
+      font-size: 0.84rem;
+      color: var(--muted);
+      margin-top: 10px;
+      font-weight: 600;
+    }
+    input[type="text"], select, input[type="range"] {
+      width: 100%;
+      margin-top: 4px;
+      padding: 9px 11px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      font-size: 0.94rem;
+      background: #fff;
+      color: var(--ink);
+    }
+    .btn-secondary {
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--teal-soft);
+      color: var(--ink);
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .banner {
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: var(--teal-soft);
+      color: var(--ink);
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+      border: 1px solid rgba(15, 118, 110, 0.18);
+    }
+    .section-box {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-top: 10px;
+      background: #f9fcfa;
+    }
+    .section-box h4 {
+      margin: 0 0 6px 0;
+      font-size: 0.94rem;
+      color: var(--teal-dark);
+    }
+    .log {
+      max-height: 220px;
+      overflow-y: auto;
+      font-size: 0.9rem;
+    }
+    .log-item {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .choices {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .choice-chip {
+      padding: 7px 11px;
+      border-radius: 999px;
+      border: 1px solid var(--teal);
+      background: #f4fbf9;
+      color: var(--teal-dark);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .choice-chip:hover {
+      background: var(--teal-soft);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="hero-left">
+        <svg width="56" height="56" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+          <circle cx="32" cy="32" r="30" fill="#2dd4bf" fill-opacity="0.22" stroke="#99f6e4" stroke-width="2"/>
+          <rect x="24" y="15" width="16" height="24" rx="8" fill="#ffffff"/>
+          <path d="M18 30C18 37.732 24.268 44 32 44C39.732 44 46 37.732 46 30" stroke="#fde68a" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M32 44V52M25 52H39" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
+        </svg>
+        <div>
+          <h1>SehatAI</h1>
+          <p>Voice-first guidance for basic health problems, diseases, and nutrition across India</p>
+        </div>
+      </div>
+      <div class="status-pill" id="keyBanner">
+        {% if keys.openai_key_set or keys.google_key_set %}
+          Cloud Key Configured
+        {% else %}
+          key not set (Running in offline demo mode)
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="stats-bar" aria-label="Built-in knowledge coverage">
+      <div class="stat-card">
+        <div class="stat-num">{{ counts.scheduled_indian_languages }}</div>
+        <div class="stat-label">Scheduled Indian Languages (+ dialects)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">{{ counts.diseases }}+</div>
+        <div class="stat-label">Common Indian Diseases &amp; Conditions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">{{ counts.symptoms }}+</div>
+        <div class="stat-label">Indian Symptoms &amp; Expressions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">{{ counts.nutrition_entries }}+</div>
+        <div class="stat-label">Nutritional &amp; Diet Guidance Entries</div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <div class="card">
+        <h3>1. Speak or Test a Health Scenario</h3>
+        <div class="banner" id="stateIndicator">State: IDLE — Ready to listen</div>
+
+        <label for="langSelect">Indian Language</label>
+        <select id="langSelect">
+          {% for lang in languages %}
+            <option value="{{ lang.code }}" data-tts="{{ lang.bcp47_tts }}" {% if lang.code == "hi" %}selected{% endif %}>
+              {{ lang.name }} ({{ lang.native_name }}) — {{ lang.script }}
+            </option>
+          {% endfor %}
+        </select>
+
+        <label for="transcriptInput">Spoken phrase (uses browser mic if supported, or pick a sample below)</label>
+        <input
+          id="transcriptInput"
+          type="text"
+          value="Mujhe do hafte se kamzori aur chakkar aa raha hai, khana bhi kam khaya jata hai"
+        />
+
+        <div class="controls-row">
+          <div>
+            <label for="noiseSelect">Background Noise</label>
+            <select id="noiseSelect">
+              <option value="low" selected>Low (Quiet room)</option>
+              <option value="medium">Medium (Household)</option>
+              <option value="high">High (Market / Traffic)</option>
+            </select>
+          </div>
+          <div>
+            <label for="confRange">ASR Confidence: <span id="confValue">0.92</span></label>
+            <input id="confRange" type="range" min="0.1" max="1.0" step="0.01" value="0.92" />
+          </div>
+        </div>
+
+        <button class="mic-btn" id="speakBtn" type="button">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="9" y="3" width="6" height="11" rx="3" fill="#fff"/>
+            <path d="M5 11C5 14.866 8.134 18 12 18C15.866 18 19 14.866 19 11M12 18V21" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+          Speak / Send Voice Turn
+        </button>
+
+        <div class="controls-row">
+          <button class="btn-secondary" id="micRecordBtn" type="button">Browser Mic Capture</button>
+          <button class="btn-secondary" id="resetBtn" type="button">Start Over</button>
+        </div>
+
+        <div class="choices">
+          <button class="choice-chip" type="button" data-sample="Mujhe do hafte se kamzori aur chakkar aa raha hai, khana bhi kam khaya jata hai">
+            Nutrition: Weakness &amp; Diet
+          </button>
+          <button class="choice-chip" type="button" data-sample="Subah se pet mein jalan aur dast hai, padosi ne kaha paani kam pina chahiye">
+            Disease &amp; Myth: Stomach + Water
+          </button>
+          <button class="choice-chip" type="button" data-sample="Mujhe saans phool rahi hai aur seene mein dard hai">
+            Urgent Red Flag
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>2. SehatAI Guidance &amp; Care Card</h3>
+        <div class="banner" id="uiBanner">Tap "Speak / Send Voice Turn" to begin a consultation.</div>
+        <div id="spokenText" style="font-weight:600;margin-bottom:8px;"></div>
+        <button class="btn-secondary" id="replayBtn" type="button">Replay Spoken Audio (TTS)</button>
+        <div id="choiceContainer" class="choices"></div>
+
+        <div id="summaryCard" style="display:none;">
+          <div class="section-box">
+            <h4>Urgent Check &amp; Health Focus</h4>
+            <div id="sumUrgent"></div>
+          </div>
+          <div class="section-box">
+            <h4>Myth &amp; Care Guidance</h4>
+            <ul id="sumMyths" style="margin:0;padding-left:18px;"></ul>
+          </div>
+          <div class="section-box">
+            <h4>Nutrition &amp; Next Steps</h4>
+            <div><strong>Foods to Favor:</strong> <span id="sumFavor"></span></div>
+            <div style="margin-top:4px;"><strong>Foods / Habits to Avoid:</strong> <span id="sumAvoid"></span></div>
+          </div>
+          <div class="section-box">
+            <h4>Visit Summary</h4>
+            <div id="sumProvider"></div>
+            <div id="sumDisclaimer" style="font-size:0.82rem;color:var(--muted);margin-top:6px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h3>3. Conversation Log</h3>
+      <div class="log" id="turnLog"></div>
+    </div>
+  </div>
+
+  <script>
+    let sessionId = null;
+    let lastSpokenText = "";
+
+    const stateIndicator = document.getElementById("stateIndicator");
+    const uiBanner = document.getElementById("uiBanner");
+    const spokenText = document.getElementById("spokenText");
+    const langSelect = document.getElementById("langSelect");
+    const transcriptInput = document.getElementById("transcriptInput");
+    const noiseSelect = document.getElementById("noiseSelect");
+    const confRange = document.getElementById("confRange");
+    const confValue = document.getElementById("confValue");
+    const turnLog = document.getElementById("turnLog");
+    const summaryCard = document.getElementById("summaryCard");
+    const choiceContainer = document.getElementById("choiceContainer");
+
+    confRange.addEventListener("input", () => {
+      confValue.textContent = Number(confRange.value).toFixed(2);
+    });
+
+    function getSelectedTtsLocale() {
+      const opt = langSelect.options[langSelect.selectedIndex];
+      return (opt && opt.getAttribute("data-tts")) || "hi-IN";
+    }
+
+    function speakOutLoud(text) {
+      lastSpokenText = text;
+      if (!("speechSynthesis" in window)) return;
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = getSelectedTtsLocale();
+      utter.rate = 0.95;
+      utter.onstart = () => { stateIndicator.textContent = "State: SPEAKING"; };
+      utter.onend = () => { stateIndicator.textContent = "State: LISTENING (Ready)"; };
+      window.speechSynthesis.speak(utter);
+    }
+
+    function appendLog(userText, replyText) {
+      const div = document.createElement("div");
+      div.className = "log-item";
+      div.innerHTML = `<strong>You:</strong> ${escapeHtml(userText || "[no speech]")}<br/><strong>SehatAI:</strong> ${escapeHtml(replyText)}`;
+      turnLog.prepend(div);
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, (m) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[m]));
+    }
+
+    function renderSummary(summary) {
+      summaryCard.style.display = "block";
+      document.getElementById("sumUrgent").textContent = summary.urgent_check;
+
+      const mythsUl = document.getElementById("sumMyths");
+      mythsUl.innerHTML = "";
+      summary.myth_and_care.forEach((line) => {
+        const li = document.createElement("li");
+        li.textContent = line;
+        mythsUl.appendChild(li);
+      });
+
+      document.getElementById("sumFavor").textContent = summary.food_and_steps.favor.join("; ");
+      document.getElementById("sumAvoid").textContent = summary.food_and_steps.avoid.join("; ");
+      document.getElementById("sumProvider").textContent = summary.visit_summary.recommended_provider;
+      document.getElementById("sumDisclaimer").textContent = summary.visit_summary.disclaimer;
+    }
+
+    async function sendTurn(overrideText) {
+      const textToSend = typeof overrideText === "string" ? overrideText : transcriptInput.value;
+      stateIndicator.textContent = "State: THINKING";
+      choiceContainer.innerHTML = "";
+
+      const res = await fetch("/api/voice/turn", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          session_id: sessionId,
+          transcript: textToSend,
+          confidence: parseFloat(confRange.value),
+          noise_level: noiseSelect.value,
+          language: langSelect.value
+        })
+      });
+      const data = await res.json();
+      sessionId = data.session.session_id;
+
+      uiBanner.textContent = data.ui_banner;
+      spokenText.textContent = data.spoken_response;
+      appendLog(textToSend, data.spoken_response);
+
+      if (data.choices && data.choices.length) {
+        data.choices.forEach((ch) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "choice-chip";
+          btn.textContent = ch;
+          btn.onclick = () => {
+            transcriptInput.value = ch;
+            confRange.value = "0.95";
+            confValue.textContent = "0.95";
+            noiseSelect.value = "low";
+            sendTurn(ch);
+          };
+          choiceContainer.appendChild(btn);
+        });
+      }
+
+      if (data.summary) {
+        renderSummary(data.summary);
+      }
+      speakOutLoud(data.spoken_response);
+    }
+
+    document.getElementById("speakBtn").addEventListener("click", () => sendTurn());
+    document.getElementById("replayBtn").addEventListener("click", () => {
+      if (lastSpokenText) speakOutLoud(lastSpokenText);
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", async () => {
+      const res = await fetch("/api/session/reset", { method: "POST" });
+      const data = await res.json();
+      sessionId = data.session_id;
+      summaryCard.style.display = "none";
+      choiceContainer.innerHTML = "";
+      spokenText.textContent = "";
+      turnLog.innerHTML = "";
+      uiBanner.textContent = "Session reset. Speak or enter a new symptom.";
+      stateIndicator.textContent = "State: LISTENING (Ready)";
+    });
+
+    document.querySelectorAll("[data-sample]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        transcriptInput.value = btn.getAttribute("data-sample");
+      });
+    });
+
+    document.getElementById("micRecordBtn").addEventListener("click", () => {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRec) {
+        uiBanner.textContent = "Browser speech recognition unavailable here; use the text box or sample chips.";
+        return;
+      }
+      const rec = new SpeechRec();
+      rec.lang = getSelectedTtsLocale();
+      stateIndicator.textContent = "State: LISTENING (Mic active)";
+      rec.onresult = (event) => {
+        const alt = event.results[0][0];
+        transcriptInput.value = alt.transcript;
+        confRange.value = Math.max(0.1, Math.min(1.0, alt.confidence || 0.85)).toFixed(2);
+        confValue.textContent = Number(confRange.value).toFixed(2);
+        sendTurn(alt.transcript);
+      };
+      rec.onerror = () => {
+        stateIndicator.textContent = "State: LISTENING (Mic error — fallback active)";
+      };
+      rec.start();
+    });
+  </script>
+</body>
+</html>

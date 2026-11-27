@@ -1,0 +1,11 @@
+services:
+  sehatai-voice-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sehatai-voice-companion
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=hackathon-demo
+    restart: unless-stopped
